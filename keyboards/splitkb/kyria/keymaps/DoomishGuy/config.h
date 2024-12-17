@@ -43,3 +43,6 @@
 #define QUICK_TAP_TERM 0
 // Currently not working for TT maybe due to mod tap settings
 /* #define TAPPING_TOGGLE 2 */
+
+#define RGBLIGHT_LAYERS
+#define SPLIT_LAYER_STATE_ENABLE

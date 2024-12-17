@@ -15,6 +15,7 @@
  */
 #include QMK_KEYBOARD_H
 
+// TODO lights
 // TODO handswap
 
 enum keycodes {
@@ -48,18 +49,19 @@ enum layers {
     _ENC, // Marker layer for right encoder push
 };
 
+/* How many base layers to cycle through.
+   Order is determined by the layers enum. */
 #define BASE_LAYER_RING_SIZE 4
 
 // Aliases for readability
 /* #define MTGAP DF(_MTGAP) */
 
 
-/*,? */
+/* ,? */
 const key_override_t comma_shift_override = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, S(KC_SLASH));
 const key_override_t *key_overrides[] = {
   &comma_shift_override,
 };
-
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -155,15 +157,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 
-#ifdef RGBLIGHT_ENABLE
-void keyboard_post_init_user(void) {
-  rgblight_enable_noeeprom(); // enables RGB, without saving settings
-  rgblight_sethsv_noeeprom(HSV_RED); // sets the color to red without saving
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING + 3); // sets mode to Fast breathing without saving
-  debug_enable=true;
-  /* debug_matrix=true; */
-}
-#endif
 
 
 uint8_t selected_layer = 0;
@@ -181,12 +174,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     layer_clear();
     layer_on(selected_layer);
     return false;
+
   default:
     return true;
   }
 }
 
-#ifdef ENCODER_ENABLE
+
 bool encoder_update_user(uint8_t index, bool clockwise) {
   switch (index) {
   case 0:
@@ -221,4 +215,51 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
   }
   return false;
 }
-#endif
+
+const  rgblight_segment_t PROGMEM dota_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
+  (
+   {0,60, 140, 255, 230}
+   );
+
+const  rgblight_segment_t PROGMEM fps_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
+  (
+   {0,60, 190, 255, 230}
+   );
+
+const  rgblight_segment_t PROGMEM rpg_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
+  (
+   {0,60, 220, 255, 230}
+   );
+
+const  rgblight_segment_t PROGMEM num_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
+  (
+   {6,4, HSV_PURPLE}
+);
+
+const rgblight_segment_t* const PROGMEM rgb_layers[] = RGBLIGHT_LAYERS_LIST
+  (
+   dota_light_layer,
+   fps_light_layer,
+   rpg_light_layer,
+   num_light_layer
+);
+
+void keyboard_post_init_user(void) {
+  rgblight_enable_noeeprom(); // enables RGB, without saving settings
+
+  // Portal orange base
+  rgblight_sethsv_noeeprom(16, 255, 230); // sets the color to red without saving
+  /* rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING); // sets mode to Fast breathing without saving */
+  /* rgblight_set_speed_noeeprom(40); */
+  /* debug_enable=true; */
+  /* debug_matrix=true; */
+
+  rgblight_layers = rgb_layers;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+  rgblight_set_layer_state(0, layer_state_cmp(state, _DOTA));
+  rgblight_set_layer_state(1, layer_state_cmp(state, _FPS));
+  rgblight_set_layer_state(2, layer_state_cmp(state, _RPG));
+  return state;
+}
