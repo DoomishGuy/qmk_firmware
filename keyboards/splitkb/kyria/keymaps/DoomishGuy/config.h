@@ -39,11 +39,6 @@
 
 #define ENCODER_RESOLUTION 2
 
-/* #define MASTER_LEFT */
-/* #define SPLIT_USB_DETECT */
-/* #define SPLIT_USB_TIMEOUT 2000 */
-
-
 #define HOLD_ON_OTHER_KEY_PRESS
 #define QUICK_TAP_TERM 0
 // Currently not working for TT maybe due to mod tap settings

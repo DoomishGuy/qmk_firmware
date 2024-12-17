@@ -15,46 +15,60 @@
  */
 #include QMK_KEYBOARD_H
 
-// TODO setup
-
 // TODO handswap
 
+enum keycodes {
+  KC_RESET_LAYER_RING = QK_USER,
+};
 
 enum layers {
+    /* Base layers.
+       The right encoder cycles through these.
+       Note that this doesn't change the default layer.
+       Keep the right encoder button transparent in all base layers for this feature.
+       Optionally keep the left encoder button free as a return key.
+    */
     _MTGAP = 0,
-    _QWERTY, // TODO
+    /* _QWERTY, // TODO */
     _DOTA,
     _FPS,
     _RPG,
+
+    /* Miroyuku inspired layers.
+       Also includes a proper numpad key layer accessible from 1 hand.
+    */
     _NUM,
     _TNUM,
     _SYM,
     _NAV,
     _NAV2,
     _FUN,
+
+    /* Marker layers */
     _ENC, // Marker layer for right encoder push
 };
 
+#define BASE_LAYER_RING_SIZE 4
 
 // Aliases for readability
-#define MTGAP   DF(_MTGAP)
+/* #define MTGAP DF(_MTGAP) */
 
 
 /*,? */
 const key_override_t comma_shift_override = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, S(KC_SLASH));
 const key_override_t *key_overrides[] = {
-&comma_shift_override,
-  };
+  &comma_shift_override,
+};
 
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MTGAP] = LAYOUT(
-     KC_TAB , KC_Y,  KC_P,  KC_O    , KC_U  , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, KC_ENT ,
-     KC_LCTL, KC_I,  KC_N,  KC_E    , KC_A  , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
-     KC_LALT, KC_Q,  KC_Z,  KC_QUOTE, KC_DOT, KC_SEMICOLON   , XXXXXXX       , XXXXXXX  ,     XXXXXXX, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
-                            XXXXXXX , KC_ESC, LT(_NAV,KC_SPC), LGUI_T(KC_TAB), MO(_TNUM),     XXXXXXX, LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), MO(_ENC)
+     KC_TAB , KC_Y,  KC_P,  KC_O               , KC_U  , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, KC_ENT ,
+     KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A  , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
+     KC_LALT, KC_Q,  KC_Z,  KC_QUOTE           , KC_DOT, KC_SEMICOLON   , XXXXXXX       , XXXXXXX  ,     XXXXXXX, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
+                            KC_RESET_LAYER_RING, KC_ESC, LT(_NAV,KC_SPC), LGUI_T(KC_TAB), MO(_TNUM),     XXXXXXX, LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), LT(_ENC, KC_RESET_LAYER_RING)
     ),
 
   [_NUM] = LAYOUT(
@@ -140,46 +154,71 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //     ),
 };
 
-/* The default OLED and rotary encoder code can be found at the bottom of qmk_firmware/keyboards/splitkb/kyria/rev1/rev1.c
- * These default settings can be overriden by your own settings in your keymap.c
- * For your convenience, here's a copy of those settings so that you can uncomment them if you wish to apply your own modifications.
- * DO NOT edit the rev1.c file; instead override the weakly defined default functions by your own.
- */
 
+#ifdef RGBLIGHT_ENABLE
+void keyboard_post_init_user(void) {
+  rgblight_enable_noeeprom(); // enables RGB, without saving settings
+  rgblight_sethsv_noeeprom(HSV_RED); // sets the color to red without saving
+  rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING + 3); // sets mode to Fast breathing without saving
+  debug_enable=true;
+  /* debug_matrix=true; */
+}
+#endif
+
+
+uint8_t selected_layer = 0;
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+
+  case KC_RESET_LAYER_RING:
+    // On press
+    if (!record->event.pressed) {
+      return false;
+    }
+    // Go back to layer 0 and reset cycle var
+    selected_layer = 0;
+    layer_clear();
+    layer_on(selected_layer);
+    return false;
+  default:
+    return true;
+  }
+}
 
 #ifdef ENCODER_ENABLE
 bool encoder_update_user(uint8_t index, bool clockwise) {
-
-    if (index == 0) {
-      // Volume control
-      // TODO left encoder doesn't work
-        if (clockwise) {
-          tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
-    } else if (index == 1) {
-        // Page up/Page down
-
-      /* if (IS_LAYER_ON(_ENC)) { */
-      /*   if (IS_LAYER_ON(_MTGAP)) { */
-      /*     if (clockwise) { */
-      /*       tap_code(KC_1); */
-      /*       /\* set_single_default_layer(_DOTA); *\/ */
-      /*     } else { */
-      /*       tap_code(KC_2); */
-      /*       /\* set_single_default_layer(_FPS); *\/ */
-      /*     } */
-      /*   } */
-      /* } */
-      /* else { */
-        if (clockwise) {
-          tap_code(KC_VOLU);
-        } else {
-          tap_code(KC_VOLD);
-        }
-      /* } */
+  switch (index) {
+  case 0:
+    // TODO left encoder doesn't work
+    if (clockwise) {
+      tap_code(KC_1);
+    } else {
+      tap_code(KC_2);
     }
-    return false;
+  case 1:
+    if (IS_LAYER_ON(_ENC)) {
+      // Cycle base layers
+      if (clockwise) {
+        selected_layer += 1;
+        selected_layer %= BASE_LAYER_RING_SIZE;
+      } else {
+        selected_layer += BASE_LAYER_RING_SIZE - 1;
+        selected_layer %= BASE_LAYER_RING_SIZE;
+      }
+      layer_clear();
+      layer_on(_ENC);
+      layer_on(selected_layer);
+    }
+    else {
+      // Volume control
+      if (clockwise) {
+        tap_code(KC_VOLU);
+      } else {
+        tap_code(KC_VOLD);
+      }
+    }
+  }
+  return false;
 }
 #endif
