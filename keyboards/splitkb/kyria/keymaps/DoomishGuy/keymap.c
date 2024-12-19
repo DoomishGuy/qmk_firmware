@@ -14,8 +14,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
+#include "gpio.h"
 
-// TODO lights
+
 // TODO handswap
 
 enum keycodes {
@@ -239,14 +240,16 @@ const  rgblight_segment_t PROGMEM dota_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
 
 const  rgblight_segment_t PROGMEM fps_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
+   // Purple
    {0, 6, 190, 255, 230},
    {31, 6, 190, 255, 230}
    );
 
 const  rgblight_segment_t PROGMEM rpg_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
-   {0,6, 64, 255, 230},
-   {31,6, 64, 255, 230}
+   // Green
+   {0,6, 100, 255, 230},
+   {31,6, 100, 255, 230}
    );
 
 const  rgblight_segment_t PROGMEM num_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
@@ -280,4 +283,10 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   rgblight_set_layer_state(1, layer_state_cmp(state, _FPS));
   rgblight_set_layer_state(2, layer_state_cmp(state, _RPG));
   return state;
+}
+
+void keyboard_pre_init_user(void) {
+  // Disable liatris power led
+  gpio_set_pin_output(24);
+  gpio_write_pin_high(24);
 }
