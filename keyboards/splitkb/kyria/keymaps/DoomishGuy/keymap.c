@@ -59,7 +59,7 @@ enum layers {
 
 
 /* ,? */
-const key_override_t comma_shift_override = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, S(KC_SLASH));
+const key_override_t comma_shift_override = ko_make_basic(MOD_MASK_SHIFT, KC_COMMA, KC_QUES);
 const key_override_t *key_overrides[] = {
   &comma_shift_override,
 };
@@ -68,17 +68,17 @@ const key_override_t *key_overrides[] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MTGAP] = LAYOUT(
-     KC_TAB , KC_Y,  KC_P,  KC_O               , KC_U  , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, KC_ENT ,
+     XXXXXXX, KC_Y,  KC_P,  KC_O               , KC_U  , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, XXXXXXX,
      KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A  , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
      KC_LALT, KC_Q,  KC_Z,  KC_QUOTE           , KC_DOT, KC_SEMICOLON   , XXXXXXX       , XXXXXXX  ,     XXXXXXX, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
                             KC_RESET_LAYER_RING, KC_ESC, LT(_NAV,KC_SPC), LGUI_T(KC_TAB), MO(_TNUM),     XXXXXXX, LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), LT(_ENC, KC_RESET_LAYER_RING)
     ),
 
   [_NUM] = LAYOUT(
-     _______, KC_LBRC    , KC_7, KC_8   , KC_9   , KC_RBRC  ,                                         _______, _______, _______ , _______ , _______  , _______,
-     _______, S(KC_9)    , KC_4, KC_5   , KC_6   , S(KC_0)  ,                                         _______, KC_RGUI, KC_RSFT , KC_RCTL , MO(_FUN) , _______,
-     _______, S(KC_COMMA), KC_1, KC_2   , KC_3   , S(KC_DOT), _______, _______,     _______, _______, _______, KC_RALT, _______ ,  _______, MO(_TNUM), _______,
-                                 _______, KC_MINS, KC_0     , KC_EQL , _______,     _______, _______, _______, _______, _______
+     _______, KC_LBRC, KC_7, KC_8   , KC_9   , KC_RBRC,                                         _______, _______, _______ , _______ , _______  , _______,
+     _______, KC_LPRN, KC_4, KC_5   , KC_6   , KC_RPRN,                                         _______, KC_RGUI, KC_RSFT , KC_RCTL , MO(_FUN) , _______,
+     _______, KC_LABK, KC_1, KC_2   , KC_3   , KC_RABK, _______, _______,     _______, _______, _______, KC_RALT, _______ ,  _______, MO(_TNUM), _______,
+                             _______, KC_MINS, KC_0   , KC_EQL , _______,     _______, _______, _______, _______, _______
     ),
 
   [_TNUM] = LAYOUT(
@@ -97,18 +97,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
   [_SYM] = LAYOUT(
-     _______, S(KC_LBRC), S(KC_7), S(KC_8), S(KC_9)   , S(KC_RBRC),                                           _______, _______, _______, _______, _______, _______,
-     _______, KC_SLSH   , S(KC_4), S(KC_5), S(KC_6)   , KC_BSLS   ,                                           _______, KC_RGUI, KC_RSFT, KC_RCTL, _______, _______,
-     _______, KC_GRV    , S(KC_1), S(KC_2), S(KC_3)   , S(KC_BSLS), _______  , _______,     _______, _______, _______, KC_RALT, _______, _______, _______, _______,
-                                   _______, S(KC_MINS), S(KC_GRV) , S(KC_EQL), _______,     _______, _______, _______, _______, _______
+     _______, KC_LCBR, KC_AMPR, KC_ASTR, _______, KC_RCBR,                                         _______, _______, _______, _______, _______, _______,
+     _______, KC_SLSH, KC_DLR , KC_PERC, KC_CIRC, KC_BSLS,                                         _______, KC_RGUI, KC_RSFT, KC_RCTL, _______, _______,
+     _______, KC_GRV , KC_EXLM, KC_AT  , KC_HASH, KC_PIPE, _______, _______,     _______, _______, _______, KC_RALT, _______, _______, _______, _______,
+                                _______, KC_UNDS, KC_TILD, KC_PLUS, _______,     _______, _______, _______, _______, _______
     ),
 
 
   [_NAV] = LAYOUT(
-     _______, _______  , _______, _______, _______, _______,                                         _______, KC_H   , KC_J   , KC_K   , KC_L    , _______,
-     _______, MO(_NAV2), KC_LCTL, KC_LSFT, KC_LGUI, _______,                                         _______, KC_LEFT, KC_DOWN, KC_UP  , KC_RIGHT, _______,
-     _______, _______  , _______, _______, KC_LALT, _______, _______, _______,     _______, _______, _______, _______, _______, _______, _______ , _______,
-                                  _______, _______, _______, _______, _______,     _______, _______, _______, _______, _______
+     _______, _______  , _______, _______, _______, _______,                                         _______, KC_H   , KC_J   , KC_K , KC_L    , _______,
+     _______, MO(_NAV2), KC_LCTL, KC_LSFT, KC_LGUI, _______,                                         _______, KC_LEFT, KC_DOWN, KC_UP, KC_RIGHT, _______,
+     _______, _______  , _______, _______, KC_LALT, _______, _______, _______,     _______, _______, _______, MS_LEFT, MS_DOWN, MS_UP, MS_RGHT , _______,
+                                  _______, _______, _______, _______, _______,     _______, MS_BTN2, MS_BTN1, MS_BTN3, _______
     ),
 
   [_NAV2] = LAYOUT(
@@ -218,6 +218,14 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
       layer_clear();
       layer_on(_ENC);
       layer_on(selected_layer);
+    }
+    else if (IS_LAYER_ON(_NAV)) {
+      if (clockwise) {
+        tap_code(MS_WHLD);
+      }
+      else {
+        tap_code(MS_WHLU);
+      }
     }
     else {
       // Volume control
