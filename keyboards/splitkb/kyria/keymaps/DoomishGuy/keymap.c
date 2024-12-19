@@ -158,22 +158,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 
-
+uint8_t saved_layer = 0;
 uint8_t selected_layer = 0;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
 
   case KC_RESET_LAYER_RING:
-    // On press
-    if (!record->event.pressed) {
+    if (record->event.pressed) {
+      // Toggle between 2 selected layers
+      uint8_t t = saved_layer;
+      saved_layer = selected_layer;
+      selected_layer = t;
+
+      layer_clear();
+      layer_on(selected_layer);
       return false;
     }
-    // Go back to layer 0 and reset cycle var
-    selected_layer = 0;
-    layer_clear();
-    layer_on(selected_layer);
-    return false;
+    return true;
+  case LT(_ENC, KC_RESET_LAYER_RING):
+    // On tap
+    if (record->tap.count && record->event.pressed) {
+      uint8_t t = saved_layer;
+      saved_layer = selected_layer;
+      selected_layer = t;
+
+      layer_clear();
+      layer_on(selected_layer);
+      return false;
+    }
+    return true;
 
   default:
     return true;
@@ -218,17 +232,21 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
 
 const  rgblight_segment_t PROGMEM dota_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
-   {0,60, 140, 255, 230}
+   // Blue base
+   {0, 6, 135, 255, 230},
+   {31, 6, 135, 255, 230}
    );
 
 const  rgblight_segment_t PROGMEM fps_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
-   {0,60, 190, 255, 230}
+   {0, 6, 190, 255, 230},
+   {31, 6, 190, 255, 230}
    );
 
 const  rgblight_segment_t PROGMEM rpg_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
-   {0,60, 220, 255, 230}
+   {0,6, 64, 255, 230},
+   {31,6, 64, 255, 230}
    );
 
 const  rgblight_segment_t PROGMEM num_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
@@ -248,7 +266,7 @@ void keyboard_post_init_user(void) {
   rgblight_enable_noeeprom(); // enables RGB, without saving settings
 
   // Portal orange base
-  rgblight_sethsv_noeeprom(16, 255, 230); // sets the color to red without saving
+  rgblight_sethsv_noeeprom(12, 255, 230); // sets the color to red without saving
   /* rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING); // sets mode to Fast breathing without saving */
   /* rgblight_set_speed_noeeprom(40); */
   /* debug_enable=true; */
