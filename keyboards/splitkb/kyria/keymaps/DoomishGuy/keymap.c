@@ -17,7 +17,8 @@
 #include "gpio.h"
 
 
-// TODO handswap
+// TODO layer lock and tap toggle in updated master
+// Fix slave flash bug in master
 
 enum keycodes {
   KC_RESET_LAYER_RING = QK_USER,
@@ -68,10 +69,10 @@ const key_override_t *key_overrides[] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MTGAP] = LAYOUT(
-     XXXXXXX, KC_Y,  KC_P,  KC_O               , KC_U  , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, XXXXXXX,
-     KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A  , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
-     KC_LALT, KC_Q,  KC_Z,  KC_QUOTE           , KC_DOT, KC_SEMICOLON   , XXXXXXX       , XXXXXXX  ,     XXXXXXX, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
-                            KC_RESET_LAYER_RING, KC_ESC, LT(_NAV,KC_SPC), LGUI_T(KC_TAB), MO(_TNUM),     XXXXXXX, LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), LT(_ENC, KC_RESET_LAYER_RING)
+     XXXXXXX, KC_Y,  KC_P,  KC_O               , KC_U          , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, XXXXXXX,
+     KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A          , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
+     KC_LALT, KC_Q,  KC_Z,  KC_QUOTE           , KC_DOT        , KC_SEMICOLON   , OSL(_TNUM)    , SH_TOGG,     SH_TOGG, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
+                            KC_RESET_LAYER_RING, LCTL_T(KC_ESC), LT(_NAV,KC_SPC), LGUI_T(KC_TAB), SH_OS  ,     SH_OS  , LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), LT(_ENC, KC_RESET_LAYER_RING)
     ),
 
   [_NUM] = LAYOUT(
@@ -260,6 +261,14 @@ const  rgblight_segment_t PROGMEM rpg_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
    {31,6, 100, 255, 230}
    );
 
+const  rgblight_segment_t PROGMEM swap_hands_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
+  (
+   {0, 6, 135, 255, 230},
+   {31,6, 135, 255, 230}
+   );
+
+
+// TODO
 const  rgblight_segment_t PROGMEM num_light_layer[] = RGBLIGHT_LAYER_SEGMENTS
   (
    {6,4, HSV_PURPLE}
@@ -270,6 +279,7 @@ const rgblight_segment_t* const PROGMEM rgb_layers[] = RGBLIGHT_LAYERS_LIST
    dota_light_layer,
    fps_light_layer,
    rpg_light_layer,
+   swap_hands_light_layer,
    num_light_layer
 );
 
@@ -290,6 +300,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   rgblight_set_layer_state(0, layer_state_cmp(state, _DOTA));
   rgblight_set_layer_state(1, layer_state_cmp(state, _FPS));
   rgblight_set_layer_state(2, layer_state_cmp(state, _RPG));
+  rgblight_set_layer_state(3, is_swap_hands_on());
   return state;
 }
 
