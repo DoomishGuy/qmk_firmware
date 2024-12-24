@@ -55,8 +55,6 @@ enum layers {
    Order is determined by the layers enum. */
 #define BASE_LAYER_RING_SIZE 4
 
-// Aliases for readability
-/* #define MTGAP DF(_MTGAP) */
 
 
 /* ,? */
@@ -69,8 +67,8 @@ const key_override_t *key_overrides[] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_MTGAP] = LAYOUT(
-     XXXXXXX, KC_Y,  KC_P,  KC_O               , KC_U          , KC_J           ,                                                         KC_K             , KC_D            , KC_L, KC_C, KC_W, XXXXXXX,
-     KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A          , KC_COMMA       ,                                                         KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
+     XXXXXXX, KC_Y,  KC_P,  KC_O               , KC_U          , KC_J           ,                                                       KC_K             , KC_D            , KC_L, KC_C, KC_W, XXXXXXX,
+     KC_LCTL, KC_I,  KC_N,  KC_E               , KC_A          , KC_COMMA       ,                                                       KC_M             , KC_H            , KC_T, KC_S, KC_R, KC_RCTL,
      KC_LALT, KC_Q,  KC_Z,  KC_QUOTE           , KC_DOT        , KC_SEMICOLON   , OSL(_TNUM)    , SH_TOGG,     SH_TOGG, XXXXXXX       , KC_B             , KC_F            , KC_G, KC_V, KC_X, KC_RALT,
                             KC_RESET_LAYER_RING, LCTL_T(KC_ESC), LT(_NAV,KC_SPC), LGUI_T(KC_TAB), SH_OS  ,     SH_OS  , LSFT_T(KC_ENT), LT(_NUM, KC_BSPC), LT(_SYM, KC_DEL), LT(_ENC, KC_RESET_LAYER_RING)
     ),
@@ -164,6 +162,9 @@ uint8_t saved_layer = 0;
 uint8_t selected_layer = 0;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  // Here since layer state updates late (doesn't register one shot)
+  rgblight_set_layer_state(3, is_swap_hands_on());
+
   switch (keycode) {
 
   case KC_RESET_LAYER_RING:
@@ -178,6 +179,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       return false;
     }
     return true;
+
   case LT(_ENC, KC_RESET_LAYER_RING):
     // On tap
     if (record->tap.count && record->event.pressed) {
@@ -300,7 +302,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
   rgblight_set_layer_state(0, layer_state_cmp(state, _DOTA));
   rgblight_set_layer_state(1, layer_state_cmp(state, _FPS));
   rgblight_set_layer_state(2, layer_state_cmp(state, _RPG));
-  rgblight_set_layer_state(3, is_swap_hands_on());
   return state;
 }
 
